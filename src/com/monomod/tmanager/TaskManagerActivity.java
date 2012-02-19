@@ -32,6 +32,9 @@ import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.AdapterView;
@@ -41,7 +44,8 @@ import android.widget.Button;
 import android.widget.ListView;
 import android.widget.Toast;
 
-public class TaskManagerActivity extends Activity implements OnItemClickListener, OnItemLongClickListener, OnClickListener {
+public class TaskManagerActivity extends Activity implements OnItemClickListener, OnItemLongClickListener, 
+					OnClickListener {
     /** Called when the activity is first created. */
 	
 
@@ -76,6 +80,27 @@ public class TaskManagerActivity extends Activity implements OnItemClickListener
         
     }
     
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        MenuInflater inflater = getMenuInflater();
+        inflater.inflate(R.menu.options_menu, menu);
+        return true;
+    }
+    
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+    	
+    	switch(item.getItemId()) {
+    	case R.id.exit:
+    		this.finish();
+    		return true;
+    	default:
+    		return super.onOptionsItemSelected(item);
+    	}
+ 
+    }
+    
+    
     public void getAppsList() {
     	
     	ActivityManager actvityManager = (ActivityManager)this.getSystemService(Context.ACTIVITY_SERVICE);
@@ -100,7 +125,7 @@ public class TaskManagerActivity extends Activity implements OnItemClickListener
 		  }
 		  
 		  if(c != null && icon != null && !(checkIfIgnore(info.processName))) {
-			  AppsList app  = new AppsList(info.processName,info.processName, icon);
+			  AppsList app  = new AppsList(c.toString(),info.processName, icon);
 			  appsList.add(app);
 		  }
 		  
