@@ -2,6 +2,6 @@ Task Manager - Android App
 ==========================
 
 
-Task Manager is very simple app for android to manage currentlly running apps and have the ability to end unused apps from the background.
+Task Manager is a very simple app for android which gives you the ability to end any app running in the background to free up some ram.
 
-Note: this app is still under development and no where near finshed.
+Note: this app is still under development and no where near finished.
