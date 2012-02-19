@@ -32,6 +32,9 @@ import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.AdapterView;
@@ -73,7 +76,28 @@ public class TaskManagerActivity extends Activity implements OnItemClickListener
 		endAll = (Button)findViewById(R.id.killAll);
 		endAll.setOnClickListener(this);
 		
-        
+
+    }
+    
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+    	MenuInflater inflater = getMenuInflater();
+    	inflater.inflate(R.menu.options_menu, menu);
+    	return true;
+    }
+    
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+    	
+    	switch(item.getItemId()) {
+    	case R.id.exit:
+    		this.finish();
+    		return true;
+    	default:
+    		return super.onOptionsItemSelected(item);
+    	}
+    	
+ 
     }
     
     public void getAppsList() {
