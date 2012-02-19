@@ -7,7 +7,15 @@
     <ListView
         android:id="@+id/appsLV"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content" >
+        android:layout_height="410dp"
+        android:layout_weight="0.58" >
     </ListView>
+
+    <Button
+        android:id="@+id/killAll"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:text="End All" />
 
 </LinearLayout>

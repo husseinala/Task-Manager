@@ -16,6 +16,7 @@ public final class R {
     public static final class id {
         public static final int appsLV=0x7f050003;
         public static final int imageView1=0x7f050001;
+        public static final int killAll=0x7f050004;
         public static final int ll=0x7f050000;
         public static final int textView1=0x7f050002;
     }
