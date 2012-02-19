@@ -49,6 +49,7 @@ public class TaskManagerActivity extends Activity implements OnItemClickListener
 	ListView appsLV;
 	Button endAll;
 	List<AppsList> appsList = new ArrayList<AppsList>();
+	String[] ignoreList = {"com.android.systemui","com.monomod.tmanager","system","com.android.phone","com.android.inputmethod","com.android.inputmethod.latin"};
 	AppsArrayAdapter adapter;	
 	
 	
@@ -98,8 +99,8 @@ public class TaskManagerActivity extends Activity implements OnItemClickListener
 			  Log.e("NameNotFound: ", info.processName);
 		  }
 		  
-		  if(c != null && icon != null && !(contains(info.processName, "com.android.systemui"))) {
-			  AppsList app  = new AppsList(c.toString(),info.processName, icon);
+		  if(c != null && icon != null && !(checkIfIgnore(info.processName))) {
+			  AppsList app  = new AppsList(info.processName,info.processName, icon);
 			  appsList.add(app);
 		  }
 		  
@@ -139,24 +140,23 @@ public class TaskManagerActivity extends Activity implements OnItemClickListener
 		return false;
 	}
 	
-	public void killApp(String pkgName) {
-		ActivityManager actvityManager = (ActivityManager)this.getSystemService(Context.ACTIVITY_SERVICE);
- 		actvityManager.restartPackage(pkgName);	
-
-	}
-	
-	public boolean contains(String str1, String str2) {
-	
+	public boolean checkIfIgnore(String pkgName) {
 		
-		for(int i = 0; i<= (str1.length() - str2.length()); i++) {
-			String subString = str1.substring(i, (i+str2.length()));
-			if(subString.equalsIgnoreCase(str2)) {
+		for(int i = 0; i< ignoreList.length; i++) {
+			if(pkgName.equalsIgnoreCase(ignoreList[i])) {
 				return true;
 			}
 		}
 		
 		return false;
 	}
+	
+	public void killApp(String pkgName) {
+		ActivityManager actvityManager = (ActivityManager)this.getSystemService(Context.ACTIVITY_SERVICE);
+ 		actvityManager.restartPackage(pkgName);	
+
+	}
+	
 	
 
 	@Override
