@@ -142,7 +142,6 @@ public class TaskManagerActivity extends Activity implements OnItemClickListener
 	}
 	
 
-
 	@Override
 	public void onClick(View arg0) {
 		new EndAllTask().execute(appsList);
