@@ -124,7 +124,7 @@ public class TaskManagerActivity extends Activity implements OnItemClickListener
 		  }
 		  
 		  if(c != null && icon != null && !(checkIfIgnore(info.processName))) {
-			  AppsList app  = new AppsList(info.processName,info.processName, icon);
+			  AppsList app  = new AppsList(c.toString(),info.processName, icon);
 			  appsList.add(app);
 		  }
 		  
