@@ -7,15 +7,15 @@
 
     <ImageView
         android:id="@+id/imageView1"
-        android:layout_width="wrap_content"
+        android:layout_width="50dp"
         android:layout_height="fill_parent"
         android:src="@drawable/ic_launcher" />
 
     <TextView
         android:id="@+id/textView1"
-        android:layout_width="221dp"
+        android:layout_width="0dp"
         android:layout_height="fill_parent"
-        android:layout_weight="0.59"
+        android:layout_weight="0.49"
         android:padding="10dp"
         android:textSize="16sp" />
 

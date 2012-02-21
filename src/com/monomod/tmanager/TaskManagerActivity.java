@@ -20,31 +20,35 @@ package com.monomod.tmanager;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 
 import android.app.Activity;
 import android.app.ActivityManager;
 import android.app.ActivityManager.RunningAppProcessInfo;
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.graphics.drawable.Drawable;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.ContextMenu;
+import android.view.ContextMenu.ContextMenuInfo;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.AdapterView;
+import android.widget.AdapterView.AdapterContextMenuInfo;
 import android.widget.AdapterView.OnItemClickListener;	
-import android.widget.AdapterView.OnItemLongClickListener;
 import android.widget.Button;
 import android.widget.ListView;
 import android.widget.Toast;
 
-public class TaskManagerActivity extends Activity implements OnItemClickListener, OnItemLongClickListener, OnClickListener {
+public class TaskManagerActivity extends Activity implements OnItemClickListener, OnClickListener {
     /** Called when the activity is first created. */
 	
 
@@ -52,31 +56,31 @@ public class TaskManagerActivity extends Activity implements OnItemClickListener
 	ListView appsLV;
 	Button endAll;
 	List<AppsList> appsList = new ArrayList<AppsList>();
-	String[] ignoreList = {"com.android.systemui","com.monomod.tmanager","system","com.android.phone","com.android.inputmethod","com.android.inputmethod.latin"};
-	AppsArrayAdapter adapter;	
+	List<String> ignoreList = new ArrayList<String>();
+	AppsArrayAdapter adapter;
+	SharedPreferences ignoreArray;
 	
 	
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        
-        
+
         setContentView(R.layout.main);
         
-
+        ignoreArray = getSharedPreferences("ignore_aray", 0);
+        Map<String, ?> test = ignoreArray.getAll();
+        ignoreList.addAll(test.keySet());
         
         getAppsList();
-		
+        
 		adapter = new AppsArrayAdapter(getApplicationContext(), R.layout.appsview_item, appsList);	
 		
 		appsLV = (ListView)findViewById(R.id.appsLV);
 		appsLV.setAdapter(adapter);
 		appsLV.setOnItemClickListener(this);
-		appsLV.setOnItemLongClickListener(this);
+		registerForContextMenu(appsLV);
 		endAll = (Button)findViewById(R.id.killAll);
 		endAll.setOnClickListener(this);
-		
-
     }
     
     @Override
@@ -96,8 +100,43 @@ public class TaskManagerActivity extends Activity implements OnItemClickListener
     	default:
     		return super.onOptionsItemSelected(item);
     	}
-    	
- 
+    }
+    
+    @Override
+    public void onCreateContextMenu(ContextMenu menu, View v,
+                                    ContextMenuInfo menuInfo) {
+        super.onCreateContextMenu(menu, v, menuInfo);
+        AdapterView.AdapterContextMenuInfo info = (AdapterView.AdapterContextMenuInfo)menuInfo;
+        AppsList app =  (AppsList) appsLV.getItemAtPosition(info.position);
+        menu.setHeaderIcon(app.icon);
+        menu.setHeaderTitle(app.name);
+        MenuInflater inflater = getMenuInflater();
+        inflater.inflate(R.menu.context_menu, menu);
+    }
+    
+    
+    @Override
+    public boolean onContextItemSelected(MenuItem item) {
+        AdapterContextMenuInfo info = (AdapterContextMenuInfo) item.getMenuInfo();
+        AppsList app =  (AppsList) appsLV.getItemAtPosition(info.position);
+        String pkgName = app.pkgName;
+        
+        switch (item.getItemId()) {
+            case R.id.cmenu_end_app:
+            	killApp(pkgName);
+         		getAppsList();
+         		adapter.notifyDataSetChanged();
+         		Toast.makeText(getApplicationContext(), "App killed!", Toast.LENGTH_SHORT).show();
+                return true;
+            case R.id.cmenu_ignore_app:
+            	ignoreApp(pkgName);
+         		return true;
+            case R.id.cmenu_app_info:
+            	getAppInfo(pkgName);
+            	return true;
+            default:
+                return super.onContextItemSelected(item);
+        }
     }
     
     public void getAppsList() {
@@ -130,15 +169,12 @@ public class TaskManagerActivity extends Activity implements OnItemClickListener
 		  
 		}
 		
-
-	
-    	
     }
 
 	@Override
 	public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
 		
-		String pkgName = ""+view.getTag();
+		String pkgName = (String)view.getTag();
 		
 		if(pkgName.equals("com.monomod.tmanager")) {
 			this.finish();
@@ -152,27 +188,27 @@ public class TaskManagerActivity extends Activity implements OnItemClickListener
 	}
 	
 
-	@Override
-	public boolean onItemLongClick(AdapterView<?> parent, View view, int position,
-			long id) {
-		
+
+	public void getAppInfo(String pkgName) {
 		Intent intent = new Intent(android.provider.Settings.ACTION_APPLICATION_DETAILS_SETTINGS);
 		intent.addCategory(Intent.CATEGORY_DEFAULT);
-	    intent.setData(Uri.parse("package:"+view.getTag()));
+	    intent.setData(Uri.parse("package:"+pkgName));
 	    startActivity(intent);
-		
-		return false;
+	}
+	
+	public void ignoreApp(String pkgName) {
+		SharedPreferences.Editor editor = ignoreArray.edit();
+        editor.putString(pkgName, pkgName);
+        editor.commit();
+        ignoreList.add(pkgName);
+    	getAppsList();
+ 		adapter.notifyDataSetChanged();
+ 		Toast.makeText(getApplicationContext(), "App added to ignore list!", Toast.LENGTH_SHORT).show();
 	}
 	
 	public boolean checkIfIgnore(String pkgName) {
+		return ignoreList.contains(pkgName);
 		
-		for(int i = 0; i< ignoreList.length; i++) {
-			if(pkgName.equalsIgnoreCase(ignoreList[i])) {
-				return true;
-			}
-		}
-		
-		return false;
 	}
 	
 	public void killApp(String pkgName) {
@@ -181,8 +217,8 @@ public class TaskManagerActivity extends Activity implements OnItemClickListener
 
 	}
 	
-	
 
+	@SuppressWarnings("unchecked")
 	@Override
 	public void onClick(View arg0) {
 		new EndAllTask().execute(appsList);
@@ -192,23 +228,16 @@ public class TaskManagerActivity extends Activity implements OnItemClickListener
 	 private class EndAllTask extends AsyncTask<List<AppsList>, Integer, Long> {
 	     protected Long doInBackground(List<AppsList>... names) {
 	    	 
-
 	    	 Iterator<AppsList> i = names[0].iterator();
-	    	 
 	    	 while(i.hasNext()) {
 	    		 killApp(i.next().pkgName);
 	    	 }
-	    	
-
 
 	 		getAppsList();
 			return null;
-	    	 
-
 	     }
 
 	     protected void onProgressUpdate(Integer... progress) {
-	        
 	     }
 
 	     protected void onPostExecute(Long result) {
