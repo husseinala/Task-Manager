@@ -36,7 +36,6 @@ import android.graphics.drawable.Drawable;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.ContextMenu;
 import android.view.ContextMenu.ContextMenuInfo;
 import android.view.Menu;
@@ -60,6 +59,7 @@ public class TaskManagerActivity extends Activity implements OnItemClickListener
 
 	ListView appsLV;
 	Button endAll;
+	Button exitBt;
 	TextView noApps;
 	TextView memInfoTv;
 	ProgressBar avalMemPB;
@@ -79,12 +79,18 @@ public class TaskManagerActivity extends Activity implements OnItemClickListener
         
         appsLV = (ListView)findViewById(R.id.apps_list_view);
 		endAll = (Button)findViewById(R.id.kill_all_bt);
+		exitBt = (Button)findViewById(R.id.exit_bt);
 		noApps = (TextView) findViewById(R.id.no_bg_app_bt);
 		avalMemPB = (ProgressBar) findViewById(R.id.aval_mem_pb);
 		memInfoTv = (TextView) findViewById(R.id.mem_info_tv);
 		totalMemory = 0;
 		availableMemory = 0;
         
+		appsLV.setOnItemClickListener(this);
+		registerForContextMenu(appsLV);
+		endAll.setOnClickListener(this);
+		exitBt.setOnClickListener(this);
+		
         ignoreArray = getSharedPreferences("ignore_aray", 0);
         Map<String, ?> test = ignoreArray.getAll();
         ignoreList.addAll(test.keySet());
@@ -95,11 +101,8 @@ public class TaskManagerActivity extends Activity implements OnItemClickListener
         
 		adapter = new AppsArrayAdapter(getApplicationContext(), R.layout.appsview_item, appsList);	
 		
-		
 		appsLV.setAdapter(adapter);
-		appsLV.setOnItemClickListener(this);
-		registerForContextMenu(appsLV);
-		endAll.setOnClickListener(this);
+		
 		
     }
     
@@ -176,10 +179,8 @@ public class TaskManagerActivity extends Activity implements OnItemClickListener
 		  try {
 			icon = pm.getApplicationIcon(pm.getApplicationInfo(info.processName, PackageManager.GET_META_DATA));
 		    c = pm.getApplicationLabel(pm.getApplicationInfo(info.processName, PackageManager.GET_META_DATA));
-		    
 		  }catch(Exception e) {
 			  c = null;
-			  Log.e("NameNotFound: ", info.processName);
 		  }
 		  
 		  if(c != null && icon != null && !(checkIfIgnore(info.processName))) {
@@ -195,9 +196,11 @@ public class TaskManagerActivity extends Activity implements OnItemClickListener
     	if(appsList.size() > 0) {
 			appsLV.setVisibility(View.VISIBLE);
 			endAll.setVisibility(View.VISIBLE);
+			exitBt.setVisibility(View.GONE);
 			noApps.setVisibility(View.GONE);
 		} else {
 			noApps.setVisibility(View.VISIBLE);
+			exitBt.setVisibility(View.VISIBLE);
 			appsLV.setVisibility(View.GONE);
 			endAll.setVisibility(View.GONE);
 		}
@@ -254,8 +257,16 @@ public class TaskManagerActivity extends Activity implements OnItemClickListener
 
 	@SuppressWarnings("unchecked")
 	@Override
-	public void onClick(View arg0) {
-		new EndAllTask().execute(appsList);
+	public void onClick(View v) {
+		switch(v.getId()) {
+		case R.id.kill_all_bt:
+			new EndAllTask().execute(appsList);
+			break;
+		case R.id.exit_bt:
+			this.finish();
+			break;
+		}
+		
 		
 	}
 	

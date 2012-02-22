@@ -37,9 +37,16 @@
     <TextView
         android:id="@+id/no_bg_app_bt"
         android:layout_width="fill_parent"
-        android:layout_height="fill_parent"
+        android:layout_height="219dp"
+        android:layout_weight="0.09"
         android:gravity="center_vertical|center_horizontal"
-        android:visibility="gone"
         android:text="@string/no_running_apps" />
+
+    <Button
+        android:id="@+id/exit_bt"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center_horizontal"
+        android:text="@string/menu_exit" />
 
 </LinearLayout>

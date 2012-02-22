@@ -19,10 +19,11 @@ public final class R {
     public static final class id {
         public static final int apps_list_view=0x7f070005;
         public static final int aval_mem_pb=0x7f070004;
-        public static final int cmenu_app_info=0x7f07000a;
-        public static final int cmenu_end_app=0x7f070008;
-        public static final int cmenu_ignore_app=0x7f070009;
-        public static final int exit=0x7f07000b;
+        public static final int cmenu_app_info=0x7f07000b;
+        public static final int cmenu_end_app=0x7f070009;
+        public static final int cmenu_ignore_app=0x7f07000a;
+        public static final int exit=0x7f07000c;
+        public static final int exit_bt=0x7f070008;
         public static final int imageView1=0x7f070001;
         public static final int kill_all_bt=0x7f070006;
         public static final int ll=0x7f070000;
