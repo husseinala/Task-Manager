@@ -17,6 +17,8 @@
 
 package com.monomod.tmanager;
 
+import java.io.IOException;
+import java.io.RandomAccessFile;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
@@ -24,6 +26,7 @@ import java.util.Map;
 
 import android.app.Activity;
 import android.app.ActivityManager;
+import android.app.ActivityManager.MemoryInfo;
 import android.app.ActivityManager.RunningAppProcessInfo;
 import android.content.Context;
 import android.content.Intent;
@@ -46,6 +49,8 @@ import android.widget.AdapterView.AdapterContextMenuInfo;
 import android.widget.AdapterView.OnItemClickListener;	
 import android.widget.Button;
 import android.widget.ListView;
+import android.widget.ProgressBar;
+import android.widget.TextView;
 import android.widget.Toast;
 
 public class TaskManagerActivity extends Activity implements OnItemClickListener, OnClickListener {
@@ -55,10 +60,15 @@ public class TaskManagerActivity extends Activity implements OnItemClickListener
 
 	ListView appsLV;
 	Button endAll;
+	TextView noApps;
+	TextView memInfoTv;
+	ProgressBar avalMemPB;
 	List<AppsList> appsList = new ArrayList<AppsList>();
 	List<String> ignoreList = new ArrayList<String>();
 	AppsArrayAdapter adapter;
 	SharedPreferences ignoreArray;
+	double totalMemory;
+	double availableMemory;
 	
 	
     @Override
@@ -67,20 +77,30 @@ public class TaskManagerActivity extends Activity implements OnItemClickListener
 
         setContentView(R.layout.main);
         
+        appsLV = (ListView)findViewById(R.id.apps_list_view);
+		endAll = (Button)findViewById(R.id.kill_all_bt);
+		noApps = (TextView) findViewById(R.id.no_bg_app_bt);
+		avalMemPB = (ProgressBar) findViewById(R.id.aval_mem_pb);
+		memInfoTv = (TextView) findViewById(R.id.mem_info_tv);
+		totalMemory = 0;
+		availableMemory = 0;
+        
         ignoreArray = getSharedPreferences("ignore_aray", 0);
         Map<String, ?> test = ignoreArray.getAll();
         ignoreList.addAll(test.keySet());
         
         getAppsList();
+        checkNoAppsRunning();
+        getMemInfo();
         
 		adapter = new AppsArrayAdapter(getApplicationContext(), R.layout.appsview_item, appsList);	
 		
-		appsLV = (ListView)findViewById(R.id.appsLV);
+		
 		appsLV.setAdapter(adapter);
 		appsLV.setOnItemClickListener(this);
 		registerForContextMenu(appsLV);
-		endAll = (Button)findViewById(R.id.killAll);
 		endAll.setOnClickListener(this);
+		
     }
     
     @Override
@@ -141,12 +161,12 @@ public class TaskManagerActivity extends Activity implements OnItemClickListener
     
     public void getAppsList() {
     	
-    	ActivityManager actvityManager = (ActivityManager)this.getSystemService(Context.ACTIVITY_SERVICE);
-        List<ActivityManager.RunningAppProcessInfo> listOfProcesses = actvityManager.getRunningAppProcesses();
+    	ActivityManager activityManager = (ActivityManager)this.getSystemService(Context.ACTIVITY_SERVICE);
+    	
+        List<ActivityManager.RunningAppProcessInfo> listOfProcesses = activityManager.getRunningAppProcesses();
         
         appsList.clear();
         
-		
 		Iterator<RunningAppProcessInfo> i = listOfProcesses.iterator();
 		PackageManager pm = getPackageManager();
 		while(i.hasNext()) {
@@ -167,8 +187,20 @@ public class TaskManagerActivity extends Activity implements OnItemClickListener
 			  appsList.add(app);
 		  }
 		  
-		}
+		}	
 		
+    }
+    
+    public void checkNoAppsRunning() {
+    	if(appsList.size() > 0) {
+			appsLV.setVisibility(View.VISIBLE);
+			endAll.setVisibility(View.VISIBLE);
+			noApps.setVisibility(View.GONE);
+		} else {
+			noApps.setVisibility(View.VISIBLE);
+			appsLV.setVisibility(View.GONE);
+			endAll.setVisibility(View.GONE);
+		}
     }
 
 	@Override
@@ -183,6 +215,8 @@ public class TaskManagerActivity extends Activity implements OnItemClickListener
 		killApp(pkgName);
  		getAppsList();
  		adapter.notifyDataSetChanged();
+ 		checkNoAppsRunning();
+ 		getMemInfo();
  		Toast.makeText(getApplicationContext(), "App killed!", Toast.LENGTH_SHORT).show();
 	
 	}
@@ -243,7 +277,34 @@ public class TaskManagerActivity extends Activity implements OnItemClickListener
 	     protected void onPostExecute(Long result) {
 	    	 Toast.makeText(getApplicationContext(), "All apps killed!", Toast.LENGTH_SHORT).show();
 	    	 adapter.notifyDataSetChanged();
+	    	 checkNoAppsRunning();
+	    	 getMemInfo();
 	     }
 	 }
+	 
+	 
+	 private void getMemInfo() {
+		 if(totalMemory == 0) {
+		    try {
+		        RandomAccessFile reader = new RandomAccessFile("/proc/meminfo", "r");
+		        String load = reader.readLine();
+		        String[] memInfo = load.split(" ");
+		        totalMemory = Double.parseDouble(memInfo[9])/1024;
+
+		    } catch (IOException ex) {
+		        ex.printStackTrace();
+		    }
+		 }
+		    
+		    ActivityManager activityManager = (ActivityManager) getSystemService(ACTIVITY_SERVICE);
+		    MemoryInfo mi = new MemoryInfo();
+		    activityManager.getMemoryInfo(mi);
+		    availableMemory = mi.availMem / 1048576L;
+		    memInfoTv.setText("Ram Info: Available: "+(int)(availableMemory)+"MB Total: "+(int)totalMemory+"MB.");
+		    int progress = (int) (((totalMemory-availableMemory)/totalMemory)*100);
+		    avalMemPB.setProgress(progress);
+		    
+		    
+		} 
 
 }

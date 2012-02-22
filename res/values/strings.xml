@@ -8,5 +8,6 @@
     <string name="end_app">End App</string>
     <string name="add_to_ignore_list">Add app to ignore list</string>
     <string name="app_info">App Info</string>
+    <string name="no_running_apps">No Running Apps</string>
 
 </resources>
