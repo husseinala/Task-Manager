@@ -5,5 +5,9 @@
     <string name="app_name">Task Manager</string>
     <string name="end_all_bt">End All</string>
     <string name="menu_exit">Exit</string>
+    <string name="end_app">End App</string>
+    <string name="add_to_ignore_list">Add app to ignore list</string>
+    <string name="app_info">App Info</string>
+    <string name="no_running_apps">No Running Apps</string>
 
 </resources>
