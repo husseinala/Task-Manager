@@ -19,16 +19,16 @@ package com.monomod.tmanager;
 
 import android.graphics.drawable.Drawable;
 
-public class AppsList {
+public class App {
 	public String name;
 	public String pkgName;
 	public Drawable icon;
 	
-	public AppsList() {
+	public App() {
 		
 	}
 	
-	public AppsList(String name, String pkgName, Drawable icon) {
+	public App(String name, String pkgName, Drawable icon) {
 		this.name = name;
 		this.pkgName = pkgName;
 		this.icon = icon;

@@ -30,16 +30,16 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
-public class AppsArrayAdapter extends ArrayAdapter<AppsList> {
+public class AppsArrayAdapter extends ArrayAdapter<App> {
 
 
-	private List<AppsList> apps = new ArrayList<AppsList>();
+	private List<App> apps = new ArrayList<App>();
 	private TextView appName;
 	private ImageView appIcon;
 	private LinearLayout ll;
 	
 	public AppsArrayAdapter(Context context, int textViewResourceId,
-			List<AppsList> objects) {
+			List<App> objects) {
 		super(context, textViewResourceId, objects);
 		
 		this.apps = objects;
@@ -49,7 +49,7 @@ public class AppsArrayAdapter extends ArrayAdapter<AppsList> {
 		return this.apps.size();
 	}
 	
-	public AppsList getItem(int index) {
+	public App getItem(int index) {
 		return this.apps.get(index);
 	}
 	
@@ -61,7 +61,7 @@ public class AppsArrayAdapter extends ArrayAdapter<AppsList> {
 			row = inflater.inflate(R.layout.appsview_item, parent, false);
 		}
 		
-		AppsList app = getItem(position);
+		App app = getItem(position);
 		
 		appName = (TextView)row.findViewById(R.id.textView1);
 		appIcon = (ImageView)row.findViewById(R.id.imageView1);

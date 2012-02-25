@@ -4,6 +4,7 @@
     <string name="hello">Hello World, TaskManagerActivity!</string>
     <string name="app_name">Task Manager</string>
     <string name="end_all_bt">End All</string>
+    <string name="menu_edit_ignore">Edit IgnoreList</string>
     <string name="menu_exit">Exit</string>
     <string name="end_app">End App</string>
     <string name="add_to_ignore_list">Add app to ignore list</string>
