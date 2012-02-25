@@ -7,10 +7,12 @@ import java.util.Map;
 import android.app.Activity;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
+import android.graphics.Color;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.AdapterView;
+import android.widget.TextView;
 import android.widget.Toast;
 import android.widget.AdapterView.OnItemClickListener;
 import android.widget.ListView;
@@ -18,6 +20,7 @@ import android.widget.ListView;
 public class EditIgnoreListActivity extends Activity implements OnItemClickListener {
 	
 	ListView ignoreLV;
+	TextView header;
 	List<App> ignoreList = new ArrayList<App>();
 	SharedPreferences ignoreArray;
 	AppsArrayAdapter adapter;
@@ -27,8 +30,12 @@ public class EditIgnoreListActivity extends Activity implements OnItemClickListe
 		
 		setContentView(R.layout.ignorelist_view);
 		
+		header = new TextView(this);
+		header.setBackgroundColor(Color.rgb(0, 0, 100));
+		header.setText("Edit Ignore List - Tap app to remove.");
 		ignoreLV = (ListView) findViewById(R.id.ignore_listview);
 		ignoreLV.setOnItemClickListener(this);
+		ignoreLV.addHeaderView(header);
 		
 		getIgnoreList();
 		

@@ -31,6 +31,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
+import android.graphics.Color;
 import android.graphics.drawable.Drawable;
 import android.net.Uri;
 import android.os.AsyncTask;
@@ -61,6 +62,7 @@ public class TaskManagerActivity extends Activity implements OnItemClickListener
 	Button exitBt;
 	TextView noApps;
 	TextView memInfoTv;
+	TextView header;
 	ProgressBar avalMemPB;
 	List<App> appsList = new ArrayList<App>();
 	List<String> ignoreList = new ArrayList<String>();
@@ -76,6 +78,9 @@ public class TaskManagerActivity extends Activity implements OnItemClickListener
 
         setContentView(R.layout.main);
         
+		header = new TextView(this);
+		header.setBackgroundColor(Color.rgb(0, 0, 100));
+		header.setText("Running Apps - Tap app to end.");
         appsLV = (ListView)findViewById(R.id.apps_list_view);
 		endAll = (Button)findViewById(R.id.kill_all_bt);
 		exitBt = (Button)findViewById(R.id.exit_bt);
@@ -85,6 +90,7 @@ public class TaskManagerActivity extends Activity implements OnItemClickListener
 		totalMemory = 0;
 		availableMemory = 0;
         
+		appsLV.addHeaderView(header);
 		appsLV.setOnItemClickListener(this);
 		registerForContextMenu(appsLV);
 		endAll.setOnClickListener(this);
