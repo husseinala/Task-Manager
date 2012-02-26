@@ -31,11 +31,12 @@ public class EditIgnoreListActivity extends Activity implements OnItemClickListe
 		setContentView(R.layout.ignorelist_view);
 		
 		header = new TextView(this);
-		header.setBackgroundColor(Color.rgb(0, 0, 100));
-		header.setText("Edit Ignore List - Tap app to remove.");
+		header.setBackgroundColor(Color.LTGRAY);
+		header.setTextColor(Color.BLACK);
+		header.setText("Tap app to remove from ignore list.");
 		ignoreLV = (ListView) findViewById(R.id.ignore_listview);
 		ignoreLV.setOnItemClickListener(this);
-		ignoreLV.addHeaderView(header);
+		ignoreLV.addHeaderView(header, false, false);
 		
 		getIgnoreList();
 		

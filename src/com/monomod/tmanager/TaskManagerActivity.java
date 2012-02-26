@@ -61,7 +61,6 @@ public class TaskManagerActivity extends Activity implements OnItemClickListener
 	Button endAll;
 	Button exitBt;
 	TextView noApps;
-	TextView memInfoTv;
 	TextView header;
 	ProgressBar avalMemPB;
 	List<App> appsList = new ArrayList<App>();
@@ -79,18 +78,18 @@ public class TaskManagerActivity extends Activity implements OnItemClickListener
         setContentView(R.layout.main);
         
 		header = new TextView(this);
-		header.setBackgroundColor(Color.rgb(0, 0, 100));
+		header.setBackgroundColor(Color.LTGRAY);
+		header.setTextColor(Color.BLACK);
 		header.setText("Running Apps - Tap app to end.");
         appsLV = (ListView)findViewById(R.id.apps_list_view);
 		endAll = (Button)findViewById(R.id.kill_all_bt);
 		exitBt = (Button)findViewById(R.id.exit_bt);
 		noApps = (TextView) findViewById(R.id.no_bg_app_bt);
 		avalMemPB = (ProgressBar) findViewById(R.id.aval_mem_pb);
-		memInfoTv = (TextView) findViewById(R.id.mem_info_tv);
 		totalMemory = 0;
 		availableMemory = 0;
         
-		appsLV.addHeaderView(header);
+		appsLV.addHeaderView(header, false, false);
 		appsLV.setOnItemClickListener(this);
 		registerForContextMenu(appsLV);
 		endAll.setOnClickListener(this);
@@ -324,7 +323,7 @@ public class TaskManagerActivity extends Activity implements OnItemClickListener
 		    MemoryInfo mi = new MemoryInfo();
 		    activityManager.getMemoryInfo(mi);
 		    availableMemory = mi.availMem / 1048576L;
-		    memInfoTv.setText("Ram Info: Available: "+(int)(availableMemory)+"MB Total: "+(int)totalMemory+"MB.");
+		    this.setTitle("Ram Info: Available: "+(int)(availableMemory)+"MB Total: "+(int)totalMemory+"MB.");
 		    int progress = (int) (((totalMemory-availableMemory)/totalMemory)*100);
 		    avalMemPB.setProgress(progress);
 		    
