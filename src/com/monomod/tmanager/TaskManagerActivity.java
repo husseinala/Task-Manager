@@ -63,7 +63,7 @@ public class TaskManagerActivity extends Activity implements OnItemClickListener
 	TextView noApps;
 	TextView memInfoTv;
 	ProgressBar avalMemPB;
-	List<AppsList> appsList = new ArrayList<AppsList>();
+	List<App> appsList = new ArrayList<App>();
 	List<String> ignoreList = new ArrayList<String>();
 	AppsArrayAdapter adapter;
 	SharedPreferences ignoreArray;
@@ -91,7 +91,7 @@ public class TaskManagerActivity extends Activity implements OnItemClickListener
 		endAll.setOnClickListener(this);
 		exitBt.setOnClickListener(this);
 		
-        ignoreArray = getSharedPreferences("ignore_aray", 0);
+        ignoreArray = getSharedPreferences("ignore_array", 0);
         Map<String, ?> test = ignoreArray.getAll();
         ignoreList.addAll(test.keySet());
         
@@ -126,6 +126,10 @@ public class TaskManagerActivity extends Activity implements OnItemClickListener
     public boolean onOptionsItemSelected(MenuItem item) {
     	
     	switch(item.getItemId()) {
+    	case R.id.edit_ignore:
+    		Intent intent = new Intent(TaskManagerActivity.this, EditIgnoreListActivity.class);
+            startActivity(intent);
+            return true;
     	case R.id.exit:
     		this.finish();
     		return true;
@@ -139,7 +143,7 @@ public class TaskManagerActivity extends Activity implements OnItemClickListener
                                     ContextMenuInfo menuInfo) {
         super.onCreateContextMenu(menu, v, menuInfo);
         AdapterView.AdapterContextMenuInfo info = (AdapterView.AdapterContextMenuInfo)menuInfo;
-        AppsList app =  (AppsList) appsLV.getItemAtPosition(info.position);
+        App app =  (App) appsLV.getItemAtPosition(info.position);
         menu.setHeaderIcon(app.icon);
         menu.setHeaderTitle(app.name);
         MenuInflater inflater = getMenuInflater();
@@ -150,7 +154,7 @@ public class TaskManagerActivity extends Activity implements OnItemClickListener
     @Override
     public boolean onContextItemSelected(MenuItem item) {
         AdapterContextMenuInfo info = (AdapterContextMenuInfo) item.getMenuInfo();
-        AppsList app =  (AppsList) appsLV.getItemAtPosition(info.position);
+        App app =  (App) appsLV.getItemAtPosition(info.position);
         String pkgName = app.pkgName;
         
         switch (item.getItemId()) {
@@ -193,7 +197,7 @@ public class TaskManagerActivity extends Activity implements OnItemClickListener
 		  }
 		  
 		  if(c != null && icon != null && !(checkIfIgnore(info.processName))) {
-			  AppsList app  = new AppsList(c.toString(),info.processName, icon);
+			  App app  = new App(c.toString(),info.processName, icon);
 			  appsList.add(app);
 		  }
 		  
@@ -279,10 +283,10 @@ public class TaskManagerActivity extends Activity implements OnItemClickListener
 		
 	}
 	
-	 private class EndAllTask extends AsyncTask<List<AppsList>, Integer, Long> {
-	     protected Long doInBackground(List<AppsList>... names) {
+	 private class EndAllTask extends AsyncTask<List<App>, Integer, Long> {
+	     protected Long doInBackground(List<App>... names) {
 	    	 
-	    	 Iterator<AppsList> i = names[0].iterator();
+	    	 Iterator<App> i = names[0].iterator();
 	    	 while(i.hasNext()) {
 	    		 killApp(i.next().pkgName);
 	    	 }

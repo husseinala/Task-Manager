@@ -14,36 +14,40 @@ public final class R {
         public static final int ic_launcher=0x7f020000;
     }
     public static final class id {
-        public static final int apps_list_view=0x7f060005;
-        public static final int aval_mem_pb=0x7f060004;
-        public static final int cmenu_app_info=0x7f06000b;
-        public static final int cmenu_end_app=0x7f060009;
-        public static final int cmenu_ignore_app=0x7f06000a;
-        public static final int exit=0x7f06000c;
-        public static final int exit_bt=0x7f060008;
+        public static final int apps_list_view=0x7f060006;
+        public static final int aval_mem_pb=0x7f060005;
+        public static final int cmenu_app_info=0x7f06000c;
+        public static final int cmenu_end_app=0x7f06000a;
+        public static final int cmenu_ignore_app=0x7f06000b;
+        public static final int edit_ignore=0x7f06000d;
+        public static final int exit=0x7f06000e;
+        public static final int exit_bt=0x7f060009;
+        public static final int ignore_listview=0x7f060003;
         public static final int imageView1=0x7f060001;
-        public static final int kill_all_bt=0x7f060006;
+        public static final int kill_all_bt=0x7f060007;
         public static final int ll=0x7f060000;
-        public static final int mem_info_tv=0x7f060003;
-        public static final int no_bg_app_bt=0x7f060007;
+        public static final int mem_info_tv=0x7f060004;
+        public static final int no_bg_app_bt=0x7f060008;
         public static final int textView1=0x7f060002;
     }
     public static final class layout {
         public static final int appsview_item=0x7f030000;
-        public static final int main=0x7f030001;
+        public static final int ignorelist_view=0x7f030001;
+        public static final int main=0x7f030002;
     }
     public static final class menu {
         public static final int context_menu=0x7f050000;
         public static final int options_menu=0x7f050001;
     }
     public static final class string {
-        public static final int add_to_ignore_list=0x7f040005;
-        public static final int app_info=0x7f040006;
-        public static final int app_name=0x7f040001;
+        public static final int add_to_ignore_list=0x7f040006;
+        public static final int app_info=0x7f040007;
+        public static final int app_name=0x7f040000;
+        public static final int edit_ignorelist_title=0x7f040001;
         public static final int end_all_bt=0x7f040002;
-        public static final int end_app=0x7f040004;
-        public static final int hello=0x7f040000;
-        public static final int menu_exit=0x7f040003;
-        public static final int no_running_apps=0x7f040007;
+        public static final int end_app=0x7f040005;
+        public static final int menu_edit_ignore=0x7f040003;
+        public static final int menu_exit=0x7f040004;
+        public static final int no_running_apps=0x7f040008;
     }
 }
