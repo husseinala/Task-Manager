@@ -20,7 +20,6 @@ package com.monomod.tmanager;
 import java.io.IOException;
 import java.io.RandomAccessFile;
 import java.util.ArrayList;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
@@ -285,12 +284,10 @@ public class TaskManagerActivity extends Activity implements OnItemClickListener
 	 private class EndAllTask extends AsyncTask<List<App>, Integer, Long> {
 	     protected Long doInBackground(List<App>... names) {
 	    	 
-	    	 Iterator<App> i = names[0].iterator();
-	    	 while(i.hasNext()) {
-	    		 killApp(i.next().pkgName);
+	    	 for(App a : names[0]) {
+	    		 killApp(a.pkgName);
 	    	 }
-
-	 		getAppsList();
+	 		
 			return null;
 	     }
 
@@ -298,6 +295,7 @@ public class TaskManagerActivity extends Activity implements OnItemClickListener
 	     }
 
 	     protected void onPostExecute(Long result) {
+	    	 getAppsList();
 	    	 Toast.makeText(getApplicationContext(), "All apps killed!", Toast.LENGTH_SHORT).show();
 	    	 adapter.notifyDataSetChanged();
 	    	 checkNoAppsRunning();
