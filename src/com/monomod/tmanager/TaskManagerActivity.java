@@ -36,23 +36,22 @@ import android.graphics.drawable.Drawable;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
-import android.view.ContextMenu;
-import android.view.ContextMenu.ContextMenuInfo;
+import android.view.ActionMode;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.AdapterView;
-import android.widget.AdapterView.AdapterContextMenuInfo;
 import android.widget.AdapterView.OnItemClickListener;	
+import android.widget.AdapterView.OnItemLongClickListener;
 import android.widget.Button;
 import android.widget.ListView;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
-public class TaskManagerActivity extends Activity implements OnItemClickListener, OnClickListener {
+public class TaskManagerActivity extends Activity implements OnItemClickListener, OnClickListener, OnItemLongClickListener {
     /** Called when the activity is first created. */
 	
 
@@ -69,6 +68,8 @@ public class TaskManagerActivity extends Activity implements OnItemClickListener
 	SharedPreferences ignoreArray;
 	double totalMemory;
 	double availableMemory;
+	ActionMode mActionMode;
+	App selectedView;
 	
 	
     @Override
@@ -87,6 +88,7 @@ public class TaskManagerActivity extends Activity implements OnItemClickListener
 		availableMemory = 0;
         
 		appsLV.setOnItemClickListener(this);
+		appsLV.setOnItemLongClickListener(this);
 		registerForContextMenu(appsLV);
 		endAll.setOnClickListener(this);
 		exitBt.setOnClickListener(this);
@@ -138,42 +140,70 @@ public class TaskManagerActivity extends Activity implements OnItemClickListener
     	}
     }
     
-    @Override
-    public void onCreateContextMenu(ContextMenu menu, View v,
-                                    ContextMenuInfo menuInfo) {
-        super.onCreateContextMenu(menu, v, menuInfo);
-        AdapterView.AdapterContextMenuInfo info = (AdapterView.AdapterContextMenuInfo)menuInfo;
-        App app =  (App) appsLV.getItemAtPosition(info.position);
-        menu.setHeaderIcon(app.icon);
-        menu.setHeaderTitle(app.name);
-        MenuInflater inflater = getMenuInflater();
-        inflater.inflate(R.menu.context_menu, menu);
-    }
+   
     
+	@Override
+	public boolean onItemLongClick(AdapterView<?> parent, View view, int position,
+			long id) {
+
+		
+		/*if (mActionMode != null) {
+	            return false;
+	        }*/
+
+	        // Start the CAB using the ActionMode.Callback defined above
+			selectedView = (App) appsLV.getItemAtPosition(position);
+	        mActionMode = startActionMode(mActionModeCallback);
+	        view.setSelected(true);
+	        return true;	
+	} 
     
-    @Override
-    public boolean onContextItemSelected(MenuItem item) {
-        AdapterContextMenuInfo info = (AdapterContextMenuInfo) item.getMenuInfo();
-        App app =  (App) appsLV.getItemAtPosition(info.position);
-        String pkgName = app.pkgName;
-        
-        switch (item.getItemId()) {
-            case R.id.cmenu_end_app:
-            	killApp(pkgName);
-         		getAppsList();
-         		adapter.notifyDataSetChanged();
-         		Toast.makeText(getApplicationContext(), "App killed!", Toast.LENGTH_SHORT).show();
-                return true;
-            case R.id.cmenu_ignore_app:
-            	ignoreApp(pkgName);
-         		return true;
-            case R.id.cmenu_app_info:
-            	getAppInfo(pkgName);
-            	return true;
-            default:
-                return super.onContextItemSelected(item);
-        }
-    }
+    private ActionMode.Callback mActionModeCallback = new ActionMode.Callback() {
+		
+		@Override
+		public boolean onPrepareActionMode(ActionMode mode, Menu menu) {
+			// TODO Auto-generated method stub
+			return false;
+		}
+		
+		@Override
+		public void onDestroyActionMode(ActionMode mode) {
+			 mActionMode = null;
+			
+		}
+		
+		@Override
+		public boolean onCreateActionMode(ActionMode mode, Menu menu) {
+			mode.setTitle(selectedView.name);
+			MenuInflater inflater = mode.getMenuInflater();
+			inflater.inflate(R.menu.context_menu, menu);
+			return true;
+		}
+		
+		@Override
+		public boolean onActionItemClicked(ActionMode mode, MenuItem item) {
+		     String pkgName = selectedView.pkgName;
+			 switch (item.getItemId()) {
+	            case R.id.cmenu_end_app:
+	            	killApp(pkgName);
+	         		getAppsList();
+	         		adapter.notifyDataSetChanged();
+	         		Toast.makeText(getApplicationContext(), "App killed!", Toast.LENGTH_SHORT).show();
+	         		mode.finish();
+	                return true;
+	            case R.id.cmenu_ignore_app:
+	            	ignoreApp(pkgName);
+	            	mode.finish();
+	         		return true;
+	            case R.id.cmenu_app_info:
+	            	getAppInfo(pkgName);
+	            	mode.finish();
+	            	return true;
+	            default:
+	                return false;
+	        }
+		}
+	};
     
     public void getAppsList() {
     	
@@ -329,6 +359,8 @@ public class TaskManagerActivity extends Activity implements OnItemClickListener
 		    avalMemPB.setProgress(progress);
 		    
 		    
-		} 
+		}
+
+
 
 }

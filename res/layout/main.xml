@@ -1,15 +1,14 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:layout_width="fill_parent"
-    android:layout_height="fill_parent"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
     android:orientation="vertical" >
-	
-	<TextView
+
+    <TextView
         android:id="@+id/mem_info_tv"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:textAppearance="?android:attr/textAppearanceSmall" />
-
 
     <ProgressBar
         android:id="@+id/aval_mem_pb"
@@ -18,25 +17,20 @@
         android:layout_height="wrap_content"
         android:progress="0" />
 
-
-
     <ListView
         android:id="@+id/apps_list_view"
         android:layout_width="fill_parent"
         android:layout_height="0dp"
         android:layout_weight="0.58"
         android:visibility="gone" >
-        
     </ListView>
 
     <Button
         android:id="@+id/kill_all_bt"
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"
-        android:layout_gravity="center_horizontal"
         android:text="@string/end_all_bt"
         android:visibility="gone" />
-
 
     <TextView
         android:id="@+id/no_bg_app_bt"
@@ -50,7 +44,6 @@
         android:id="@+id/exit_bt"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_gravity="center_horizontal"
         android:text="@string/menu_exit" />
 
 </LinearLayout>

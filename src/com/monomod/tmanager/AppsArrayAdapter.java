@@ -22,7 +22,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 import android.content.Context;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -58,10 +57,8 @@ public class AppsArrayAdapter extends ArrayAdapter<App> {
 		View row = appView;
 		
 		if(row == null) {
-			Log.e("ArrayListAdapter", "Starting XML Row Inflation ... ");
 			LayoutInflater inflater = (LayoutInflater) this.getContext().getSystemService(Context.LAYOUT_INFLATER_SERVICE);
 			row = inflater.inflate(R.layout.appsview_item, parent, false);
-			Log.e("ArrayListAdapter", "Successfully completed XML Row Inflation!");
 		}
 		
 		App app = getItem(position);

@@ -3,7 +3,8 @@
     android:id="@+id/ll"
     android:layout_width="fill_parent"
     android:layout_height="fill_parent"
-    android:orientation="horizontal" >
+    android:orientation="horizontal"
+    android:background="?android:attr/activatedBackgroundIndicator" >
 
     <ImageView
         android:id="@+id/imageView1"
