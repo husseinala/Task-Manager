@@ -4,6 +4,7 @@
     <string name="app_name">Task Manager</string>
     <string name="edit_ignorelist_title">Task Manager - Edit Ignore List</string>
     <string name="end_all_bt">End All</string>
+    <string name="menu_refresh">Refresh</string>
     <string name="menu_edit_ignore">Edit IgnoreList</string>
     <string name="menu_exit">Exit</string>
     <string name="end_app">End App</string>

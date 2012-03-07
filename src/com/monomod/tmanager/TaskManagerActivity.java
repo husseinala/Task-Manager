@@ -111,10 +111,7 @@ public class TaskManagerActivity extends Activity implements OnItemClickListener
     @Override
     protected void onStart() {
         super.onStart();
- 		getAppsList();
- 		adapter.notifyDataSetChanged();
- 		checkNoAppsRunning();
- 		getMemInfo();
+        refreshAppList();
     }
     
     @Override
@@ -128,6 +125,9 @@ public class TaskManagerActivity extends Activity implements OnItemClickListener
     public boolean onOptionsItemSelected(MenuItem item) {
     	
     	switch(item.getItemId()) {
+    	case R.id.menu_refresh:
+    		refreshAppList();
+    		return true;
     	case R.id.edit_ignore:
     		Intent intent = new Intent(TaskManagerActivity.this, EditIgnoreListActivity.class);
             startActivity(intent);
@@ -233,6 +233,13 @@ public class TaskManagerActivity extends Activity implements OnItemClickListener
 		  
 		}	
 		
+    }
+    
+    public void refreshAppList() {
+    	getAppsList();
+ 		adapter.notifyDataSetChanged();
+ 		checkNoAppsRunning();
+ 		getMemInfo();
     }
     
     public void checkNoAppsRunning() {

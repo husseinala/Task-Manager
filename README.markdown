@@ -7,7 +7,8 @@ Task Manager is a very simple app for android which gives you the ability to end
 Note: this app is still under development and no where near finished.
 
 
-<img src="https://github.com/husseinala/Task-Manager/raw/ics/screenshots/1.png" />
-<img src="https://github.com/husseinala/Task-Manager/raw/ics/screenshots/2.png" />
-<img src="https://github.com/husseinala/Task-Manager/raw/ics/screenshots/3.png" />
-<img src="https://github.com/husseinala/Task-Manager/raw/ics/screenshots/4.png" />
+<img src="https://github.com/husseinala/Task-Manager/raw/ics/screenshots/screen1.jpg" />
+<img src="https://github.com/husseinala/Task-Manager/raw/ics/screenshots/screen2.jpg" />
+<img src="https://github.com/husseinala/Task-Manager/raw/ics/screenshots/screen3.jpg" />
+<img src="https://github.com/husseinala/Task-Manager/raw/ics/screenshots/screen4.jpg" />
+<img src="https://github.com/husseinala/Task-Manager/raw/ics/screenshots/screen5.jpg" />
