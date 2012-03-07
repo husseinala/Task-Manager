@@ -4,12 +4,16 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
+
+import android.app.ActionBar;
 import android.app.Activity;
+import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.graphics.Color;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.TextView;
@@ -30,6 +34,10 @@ public class EditIgnoreListActivity extends Activity implements OnItemClickListe
 		
 		setContentView(R.layout.ignorelist_view);
 		
+		ActionBar actionBar = getActionBar();
+		actionBar.setDisplayHomeAsUpEnabled(true);
+		actionBar.setTitle("Edit ignore list");
+		
 		header = new TextView(this);
 		header.setBackgroundColor(Color.LTGRAY);
 		header.setTextColor(Color.BLACK);
@@ -44,6 +52,20 @@ public class EditIgnoreListActivity extends Activity implements OnItemClickListe
 		
 		ignoreLV.setAdapter(adapter);
 		
+	}
+	
+	@Override
+	public boolean onOptionsItemSelected(MenuItem item) {
+	    switch (item.getItemId()) {
+	        case android.R.id.home:
+	            // app icon in action bar clicked; go home
+	            Intent intent = new Intent(this, TaskManagerActivity.class);
+	            intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+	            startActivity(intent);
+	            return true;
+	        default:
+	            return super.onOptionsItemSelected(item);
+	    }
 	}
 	
 	public void getIgnoreList() {
