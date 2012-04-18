@@ -2,7 +2,6 @@
 <menu xmlns:android="http://schemas.android.com/apk/res/android" >
     <item android:id="@+id/cmenu_end_app" android:title="@string/end_app"></item>
     <item android:id="@+id/cmenu_ignore_app" android:title="@string/add_to_ignore_list"></item>
-    <item android:id="@+id/cmenu_app_info" android:title="@string/app_info"></item>
     
 
 </menu>

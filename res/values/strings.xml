@@ -7,8 +7,8 @@
     <string name="menu_refresh">Refresh</string>
     <string name="menu_edit_ignore">Edit IgnoreList</string>
     <string name="menu_exit">Exit</string>
-    <string name="end_app">End App</string>
-    <string name="add_to_ignore_list">Add app to ignore list</string>
+    <string name="end_app">End Selected</string>
+    <string name="add_to_ignore_list">Ignore Selected</string>
     <string name="app_info">App Info</string>
     <string name="no_running_apps">No Running Apps</string>
 

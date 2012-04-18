@@ -36,22 +36,23 @@ import android.graphics.drawable.Drawable;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.ActionMode;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.View.OnClickListener;
+import android.widget.AbsListView.MultiChoiceModeListener;
 import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemClickListener;	
-import android.widget.AdapterView.OnItemLongClickListener;
 import android.widget.Button;
 import android.widget.ListView;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
-public class TaskManagerActivity extends Activity implements OnItemClickListener, OnClickListener, OnItemLongClickListener {
+public class TaskManagerActivity extends Activity implements OnItemClickListener, OnClickListener, MultiChoiceModeListener {
     /** Called when the activity is first created. */
 	
 
@@ -69,7 +70,7 @@ public class TaskManagerActivity extends Activity implements OnItemClickListener
 	double totalMemory;
 	double availableMemory;
 	ActionMode mActionMode;
-	App selectedView;
+	List<App> selectedViews = new ArrayList<App>();
 	
 	
     @Override
@@ -88,7 +89,8 @@ public class TaskManagerActivity extends Activity implements OnItemClickListener
 		availableMemory = 0;
         
 		appsLV.setOnItemClickListener(this);
-		appsLV.setOnItemLongClickListener(this);
+		appsLV.setChoiceMode(ListView.CHOICE_MODE_MULTIPLE_MODAL);
+		appsLV.setMultiChoiceModeListener(this);
 		registerForContextMenu(appsLV);
 		endAll.setOnClickListener(this);
 		exitBt.setOnClickListener(this);
@@ -141,70 +143,6 @@ public class TaskManagerActivity extends Activity implements OnItemClickListener
     }
     
    
-    
-	@Override
-	public boolean onItemLongClick(AdapterView<?> parent, View view, int position,
-			long id) {
-
-		
-		/*if (mActionMode != null) {
-	            return false;
-	        }*/
-
-	        // Start the CAB using the ActionMode.Callback defined above
-			selectedView = (App) appsLV.getItemAtPosition(position);
-	        mActionMode = startActionMode(mActionModeCallback);
-	        view.setSelected(true);
-	        return true;	
-	} 
-    
-    private ActionMode.Callback mActionModeCallback = new ActionMode.Callback() {
-		
-		@Override
-		public boolean onPrepareActionMode(ActionMode mode, Menu menu) {
-			// TODO Auto-generated method stub
-			return false;
-		}
-		
-		@Override
-		public void onDestroyActionMode(ActionMode mode) {
-			 mActionMode = null;
-			
-		}
-		
-		@Override
-		public boolean onCreateActionMode(ActionMode mode, Menu menu) {
-			mode.setTitle(selectedView.name);
-			MenuInflater inflater = mode.getMenuInflater();
-			inflater.inflate(R.menu.context_menu, menu);
-			return true;
-		}
-		
-		@Override
-		public boolean onActionItemClicked(ActionMode mode, MenuItem item) {
-		     String pkgName = selectedView.pkgName;
-			 switch (item.getItemId()) {
-	            case R.id.cmenu_end_app:
-	            	killApp(pkgName);
-	         		getAppsList();
-	         		adapter.notifyDataSetChanged();
-	         		Toast.makeText(getApplicationContext(), "App killed!", Toast.LENGTH_SHORT).show();
-	         		mode.finish();
-	                return true;
-	            case R.id.cmenu_ignore_app:
-	            	ignoreApp(pkgName);
-	            	mode.finish();
-	         		return true;
-	            case R.id.cmenu_app_info:
-	            	getAppInfo(pkgName);
-	            	mode.finish();
-	            	return true;
-	            default:
-	                return false;
-	        }
-		}
-	};
-    
     public void getAppsList() {
     	
     	ActivityManager activityManager = (ActivityManager)this.getSystemService(Context.ACTIVITY_SERVICE);
@@ -229,10 +167,8 @@ public class TaskManagerActivity extends Activity implements OnItemClickListener
 		  if(c != null && icon != null && !(checkIfIgnore(info.processName))) {
 			  App app  = new App(c.toString(),info.processName, icon);
 			  appsList.add(app);
-		  }
-		  
-		}	
-		
+		  } 
+		}
     }
     
     public void refreshAppList() {
@@ -283,11 +219,17 @@ public class TaskManagerActivity extends Activity implements OnItemClickListener
 	    startActivity(intent);
 	}
 	
-	public void ignoreApp(String pkgName) {
-		SharedPreferences.Editor editor = ignoreArray.edit();
-        editor.putString(pkgName, pkgName);
-        editor.commit();
-        ignoreList.add(pkgName);
+	public void addSelectedAppsToIgnore(List<App> apps) {
+		Log.e("selectedViews",""+apps.size());
+		String pkgName;
+		Iterator<App> i = apps.iterator();
+   	 	while(i.hasNext()) {
+   	 		pkgName = i.next().pkgName;
+   	 		SharedPreferences.Editor editor = ignoreArray.edit();
+   	 		editor.putString(pkgName, pkgName);
+   	 		editor.commit();
+   	 		ignoreList.add(pkgName);
+   	 	}
     	getAppsList();
  		adapter.notifyDataSetChanged();
  		Toast.makeText(getApplicationContext(), "App added to ignore list!", Toast.LENGTH_SHORT).show();
@@ -367,6 +309,49 @@ public class TaskManagerActivity extends Activity implements OnItemClickListener
 		    
 		    
 		}
+
+	@SuppressWarnings("unchecked")
+	@Override
+	public boolean onActionItemClicked(ActionMode mode, MenuItem item) {
+		 switch (item.getItemId()) {
+           case R.id.cmenu_end_app:
+        	   	new EndAllTask().execute(selectedViews);
+        		mode.finish();
+               return true;
+           case R.id.cmenu_ignore_app:
+           		addSelectedAppsToIgnore(selectedViews);
+           		mode.finish();
+        		return true;
+           default:
+               return false;
+       }
+	}
+
+	@Override
+	public boolean onCreateActionMode(ActionMode mode, Menu menu) {
+		MenuInflater inflater = mode.getMenuInflater();
+        inflater.inflate(R.menu.context_menu, menu);
+        return true;
+	}
+
+	@Override
+	public void onDestroyActionMode(ActionMode arg0) {}
+
+	@Override
+	public boolean onPrepareActionMode(ActionMode arg0, Menu arg1) {return false;}
+
+	@Override
+	public void onItemCheckedStateChanged(ActionMode mode, int position, long id,
+			boolean checked) {
+		if(checked == true) {
+			selectedViews.add((App)appsLV.getItemAtPosition(position));
+		} else {
+			selectedViews.remove((App)appsLV.getItemAtPosition(position));
+		}
+		
+		mode.setTitle(selectedViews.size()+" Selected");
+		
+	}
 
 
 
