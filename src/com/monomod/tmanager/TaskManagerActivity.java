@@ -335,7 +335,9 @@ public class TaskManagerActivity extends Activity implements OnItemClickListener
 	}
 
 	@Override
-	public void onDestroyActionMode(ActionMode arg0) {}
+	public void onDestroyActionMode(ActionMode arg0) {
+		selectedViews.removeAll(selectedViews);
+	}
 
 	@Override
 	public boolean onPrepareActionMode(ActionMode arg0, Menu arg1) {return false;}
