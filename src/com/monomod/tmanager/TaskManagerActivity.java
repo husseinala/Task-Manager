@@ -36,7 +36,6 @@ import android.graphics.drawable.Drawable;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.ActionMode;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -220,7 +219,6 @@ public class TaskManagerActivity extends Activity implements OnItemClickListener
 	}
 	
 	public void addSelectedAppsToIgnore(List<App> apps) {
-		Log.e("selectedViews",""+apps.size());
 		String pkgName;
 		Iterator<App> i = apps.iterator();
    	 	while(i.hasNext()) {
@@ -264,8 +262,8 @@ public class TaskManagerActivity extends Activity implements OnItemClickListener
 	
 	 private class EndAllTask extends AsyncTask<List<App>, Integer, Long> {
 	     protected Long doInBackground(List<App>... names) {
-	    	 
-	    	 Iterator<App> i = names[0].iterator();
+	    	 List<App> al = names[names.length-1];
+	    	 Iterator<App> i = al.iterator();
 	    	 while(i.hasNext()) {
 	    		 killApp(i.next().pkgName);
 	    	 }
@@ -325,19 +323,19 @@ public class TaskManagerActivity extends Activity implements OnItemClickListener
            default:
                return false;
        }
+		 
 	}
 
 	@Override
 	public boolean onCreateActionMode(ActionMode mode, Menu menu) {
+		selectedViews.clear();
 		MenuInflater inflater = mode.getMenuInflater();
         inflater.inflate(R.menu.context_menu, menu);
         return true;
 	}
 
 	@Override
-	public void onDestroyActionMode(ActionMode arg0) {
-		selectedViews.removeAll(selectedViews);
-	}
+	public void onDestroyActionMode(ActionMode arg0) {}
 
 	@Override
 	public boolean onPrepareActionMode(ActionMode arg0, Menu arg1) {return false;}
