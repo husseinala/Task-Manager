@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="utf-8"?>
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android" >
+
+    <PreferenceCategory
+            android:title="General">
+
+        <ListPreference
+                android:key="touch_action"
+                android:title="Touch Action"
+                android:summary="Select the default action when an app is clicked."
+                android:entries="@array/touch_action"
+                android:entryValues="@array/touch_action"
+                android:dialogTitle="Pick the default action." />
+        
+        <Preference
+            android:title="Edit Ignore List"
+            android:summary="View and remove apps from the ignore list.">
+            <intent
+             android:action="android.intent.action.VIEW"
+             android:targetPackage="com.monomod.tmanager"
+             android:targetClass="com.monomod.tmanager.EditIgnoreListActivity" />
+   		 </Preference>
+
+    </PreferenceCategory>
+    
+    <PreferenceCategory
+            android:title="About">
+        <Preference
+            android:title="Author: Husseinala"
+            android:summary="Follow me on Google+."
+            android:icon="@drawable/ic_google">
+            <intent
+             android:action="android.intent.action.VIEW"
+             android:data="https://plus.google.com/118003029072880828208" />
+   		 </Preference>
+     	<Preference
+            android:title="Build Version"
+            android:summary="0.5.253 Beta">
+   		 </Preference>
+        
+    </PreferenceCategory>
+   
+    
+</PreferenceScreen>

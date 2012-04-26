@@ -32,11 +32,14 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
+import android.content.pm.PackageManager.NameNotFoundException;
 import android.graphics.drawable.Drawable;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.view.ActionMode;
+import android.view.ContextMenu;
+import android.view.ContextMenu.ContextMenuInfo;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
@@ -44,6 +47,7 @@ import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.AbsListView.MultiChoiceModeListener;
 import android.widget.AdapterView;
+import android.widget.AdapterView.AdapterContextMenuInfo;
 import android.widget.AdapterView.OnItemClickListener;	
 import android.widget.Button;
 import android.widget.ListView;
@@ -54,8 +58,10 @@ import android.widget.Toast;
 public class TaskManagerActivity extends Activity implements OnItemClickListener, OnClickListener, MultiChoiceModeListener {
     /** Called when the activity is first created. */
 	
-
-
+	
+	public static final String PREFS_NAME = "com.monomod.tmanager_preferences";
+	public static final String IGNORE_ARRAY = "ignore_array";
+	
 	ListView appsLV;
 	Button endAll;
 	Button exitBt;
@@ -66,10 +72,12 @@ public class TaskManagerActivity extends Activity implements OnItemClickListener
 	List<String> ignoreList = new ArrayList<String>();
 	AppsArrayAdapter adapter;
 	SharedPreferences ignoreArray;
+	SharedPreferences preferences;
 	double totalMemory;
 	double availableMemory;
 	ActionMode mActionMode;
 	List<App> selectedViews = new ArrayList<App>();
+	String touchAction;
 	
 	
     @Override
@@ -94,9 +102,12 @@ public class TaskManagerActivity extends Activity implements OnItemClickListener
 		endAll.setOnClickListener(this);
 		exitBt.setOnClickListener(this);
 		
-        ignoreArray = getSharedPreferences("ignore_array", 0);
+        ignoreArray = getSharedPreferences(IGNORE_ARRAY, 0);
         Map<String, ?> test = ignoreArray.getAll();
         ignoreList.addAll(test.keySet());
+        
+        preferences = getSharedPreferences(PREFS_NAME, 0);
+        touchAction = preferences.getString("touch_action", "Show All");
         
         getAppsList();
         checkNoAppsRunning();
@@ -104,15 +115,14 @@ public class TaskManagerActivity extends Activity implements OnItemClickListener
         
 		adapter = new AppsArrayAdapter(getApplicationContext(), R.layout.appsview_item, appsList);	
 		
-		appsLV.setAdapter(adapter);
-		
-		
+		appsLV.setAdapter(adapter);	
     }
     
     @Override
     protected void onStart() {
         super.onStart();
         refreshAppList();
+        touchAction = preferences.getString("touch_action", "Show All");
     }
     
     @Override
@@ -129,6 +139,10 @@ public class TaskManagerActivity extends Activity implements OnItemClickListener
     	case R.id.menu_refresh:
     		refreshAppList();
     		return true;
+    	case R.id.preferences:
+    		Intent t = new Intent(TaskManagerActivity.this, PreferencesActivity.class);
+            startActivity(t);
+            return true;
     	case R.id.edit_ignore:
     		Intent intent = new Intent(TaskManagerActivity.this, EditIgnoreListActivity.class);
             startActivity(intent);
@@ -154,19 +168,19 @@ public class TaskManagerActivity extends Activity implements OnItemClickListener
 		PackageManager pm = getPackageManager();
 		while(i.hasNext()) {
 		  ActivityManager.RunningAppProcessInfo info = (ActivityManager.RunningAppProcessInfo)(i.next());
-		  CharSequence c = null;
-		  Drawable icon = null;
-		  try {
-			icon = pm.getApplicationIcon(pm.getApplicationInfo(info.processName, PackageManager.GET_META_DATA));
-		    c = pm.getApplicationLabel(pm.getApplicationInfo(info.processName, PackageManager.GET_META_DATA));
-		  }catch(Exception e) {
-			  c = null;
+		  CharSequence appName = null;
+		  Drawable appIcon = null;
+		  if(pm.getLaunchIntentForPackage(info.processName) != null && !(checkIfIgnore(info.processName))) {
+				try {
+					appIcon = pm.getApplicationIcon(pm.getApplicationInfo(info.processName, PackageManager.GET_META_DATA));
+					appName = pm.getApplicationLabel(pm.getApplicationInfo(info.processName, PackageManager.GET_META_DATA));
+					App app  = new App(appName.toString(),info.processName, appIcon);
+					appsList.add(app);
+				} catch (NameNotFoundException e) {
+					e.printStackTrace();
+				}	    
 		  }
 		  
-		  if(c != null && icon != null && !(checkIfIgnore(info.processName))) {
-			  App app  = new App(c.toString(),info.processName, icon);
-			  appsList.add(app);
-		  } 
 		}
     }
     
@@ -193,24 +207,29 @@ public class TaskManagerActivity extends Activity implements OnItemClickListener
 
 	@Override
 	public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-		
-		String pkgName = (String)view.getTag();
-		
-		if(pkgName.equals("com.monomod.tmanager")) {
-			this.finish();
+	    String pkgName = (String) view.getTag();
+	    PackageManager pm = getPackageManager();
+      
+		if(touchAction.equals("End App")){
+			if(pkgName.equals("com.monomod.tmanager")) {
+    			this.finish();
+    		}
+    		killApp(pkgName);
+    		refreshAppList();
+     		Toast.makeText(getApplicationContext(), "App killed!", Toast.LENGTH_SHORT).show();
+		} else if(touchAction.equals("Switch To App")){
+			Intent intent = pm.getLaunchIntentForPackage(pkgName);
+            getApplicationContext().startActivity(intent);
+		} else if(touchAction.equals("App Info")) {
+			getAppInfo(pkgName);
+		} else if(touchAction.equals("Ignore App")) {
+			addToIgnore(pkgName);
+		} else {
+			parent.showContextMenuForChild(view);
 		}
-
-		killApp(pkgName);
- 		getAppsList();
- 		adapter.notifyDataSetChanged();
- 		checkNoAppsRunning();
- 		getMemInfo();
- 		Toast.makeText(getApplicationContext(), "App killed!", Toast.LENGTH_SHORT).show();
-	
+		refreshAppList();
 	}
 	
-
-
 	public void getAppInfo(String pkgName) {
 		Intent intent = new Intent(android.provider.Settings.ACTION_APPLICATION_DETAILS_SETTINGS);
 		intent.addCategory(Intent.CATEGORY_DEFAULT);
@@ -218,30 +237,31 @@ public class TaskManagerActivity extends Activity implements OnItemClickListener
 	    startActivity(intent);
 	}
 	
-	public void addSelectedAppsToIgnore(List<App> apps) {
+	public void addToIgnore(List<App> apps) {
 		String pkgName;
 		Iterator<App> i = apps.iterator();
    	 	while(i.hasNext()) {
    	 		pkgName = i.next().pkgName;
-   	 		SharedPreferences.Editor editor = ignoreArray.edit();
-   	 		editor.putString(pkgName, pkgName);
-   	 		editor.commit();
-   	 		ignoreList.add(pkgName);
+   	 		addToIgnore(pkgName);
    	 	}
-    	getAppsList();
- 		adapter.notifyDataSetChanged();
- 		Toast.makeText(getApplicationContext(), "App added to ignore list!", Toast.LENGTH_SHORT).show();
+   	 	refreshAppList();
+ 		Toast.makeText(getApplicationContext(), apps.size()+" apps added to ignore list.", Toast.LENGTH_SHORT).show();
+	}
+	
+	public void addToIgnore(String pkgName) {
+	 	SharedPreferences.Editor editor = ignoreArray.edit();
+	 	editor.putString(pkgName, pkgName);
+	 	editor.commit();
+	 	ignoreList.add(pkgName);
 	}
 	
 	public boolean checkIfIgnore(String pkgName) {
 		return ignoreList.contains(pkgName);
-		
 	}
 	
 	public void killApp(String pkgName) {
 		ActivityManager actvityManager = (ActivityManager)this.getSystemService(Context.ACTIVITY_SERVICE);
  		actvityManager.restartPackage(pkgName);	
-
 	}
 	
 
@@ -256,8 +276,43 @@ public class TaskManagerActivity extends Activity implements OnItemClickListener
 			this.finish();
 			break;
 		}
-		
-		
+	}
+	
+	@Override
+	public void onCreateContextMenu(ContextMenu menu, View v,
+	                                ContextMenuInfo menuInfo) {
+	    super.onCreateContextMenu(menu, v, menuInfo);
+	    MenuInflater inflater = getMenuInflater();
+	    inflater.inflate(R.menu.click_context_menu, menu);
+	}
+	
+	@Override
+	public boolean onContextItemSelected(MenuItem item) {
+	    AdapterContextMenuInfo info = (AdapterContextMenuInfo) item.getMenuInfo();
+	    String pkgName = (String) info.targetView.getTag();
+	    PackageManager pm = getPackageManager();
+	    
+	    switch (item.getItemId()) {
+        case R.id.ccmenu_endApp:
+    		if(pkgName.equals("com.monomod.tmanager")) {
+    			this.finish();
+    		}
+    		killApp(pkgName);
+    		refreshAppList();
+     		Toast.makeText(getApplicationContext(), "App killed!", Toast.LENGTH_SHORT).show();
+            return true;
+        case R.id.ccmenu_switchToApp:
+            Intent intent = pm.getLaunchIntentForPackage(pkgName);
+            getApplicationContext().startActivity(intent);
+            return true;
+        case R.id.ccmenu_appInfo:
+        	getAppInfo(pkgName);
+        case R.id.ccmenu_ignoreApp:
+        	addToIgnore(pkgName);
+        	refreshAppList();
+        default:
+            return super.onContextItemSelected(item);
+	    }
 	}
 	
 	 private class EndAllTask extends AsyncTask<List<App>, Integer, Long> {
@@ -317,7 +372,7 @@ public class TaskManagerActivity extends Activity implements OnItemClickListener
         		mode.finish();
                return true;
            case R.id.cmenu_ignore_app:
-           		addSelectedAppsToIgnore(selectedViews);
+        	   addToIgnore(selectedViews);
            		mode.finish();
         		return true;
            default:

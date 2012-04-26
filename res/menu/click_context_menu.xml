@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android" >
+    <item android:id="@+id/ccmenu_endApp" android:title="End App"></item>
+    <item android:id="@+id/ccmenu_switchToApp" android:title="Switch To App"></item>
+    <item android:id="@+id/ccmenu_appInfo" android:title="App Info"></item>
+    <item android:id="@+id/ccmenu_ignoreApp" android:title="Ignore App"></item>
+    
+
+</menu>

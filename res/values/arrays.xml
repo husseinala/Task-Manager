@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+	<string-array name="touch_action">
+		<item>Show All</item>
+		<item>End App</item>
+		<item>Switch To App</item>
+		<item>App Info</item>
+		<item>Ignore App</item>
+	</string-array>
+</resources>

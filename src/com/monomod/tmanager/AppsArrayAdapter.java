@@ -32,7 +32,7 @@ import android.widget.TextView;
 
 public class AppsArrayAdapter extends ArrayAdapter<App> {
 
-	private Context context;
+
 	private List<App> apps = new ArrayList<App>();
 	private TextView appName;
 	private ImageView appIcon;
@@ -41,7 +41,6 @@ public class AppsArrayAdapter extends ArrayAdapter<App> {
 	public AppsArrayAdapter(Context context, int textViewResourceId,
 			List<App> objects) {
 		super(context, textViewResourceId, objects);
-		this.context = context;
 		this.apps = objects;
 	}
 	
